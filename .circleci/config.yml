@@ -8,10 +8,28 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Dependencies
+          name: Install Fixed Dependencies
           command: pip install --no-cache-dir -r requirements.txt
       - snyk/scan
+      - run:
+          name: Run Unit Tests
+          command: pytest
+  build_push_image:
+    docker:
+      - image: cimg/python:3.12.2
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build and Push Docker Image
+          command: |
+            docker build -t $DOCKERHUB_USERNAME/app:latest .
+            echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            docker push $DOCKERHUB_USERNAME/app:latest
 workflows:
   build_test_deploy:
     jobs:
       - build_test
+      - build_push_image:
+          requires:
+            - build_test
