@@ -1,14 +1,17 @@
 version: 2.1
+orbs:
+  snyk: snyk/snyk@2.2.0
 jobs:
-  build:
+  build_test:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.12.2
     steps:
       - checkout
       - run:
           name: Install Dependencies
           command: pip install --no-cache-dir -r requirements.txt
+      - snyk/scan
 workflows:
   build_test_deploy:
     jobs:
-      - build
+      - build_test
