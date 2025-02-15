@@ -21,7 +21,14 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build and Push Docker Image
+          name: Build and Scan Docker Image
+          command: |
+            docker build -t $DOCKERHUB_USERNAME/app:latest .
+      - snyk/scan:
+          docker-image-name: "$DOCKERHUB_USERNAME/app:latest"
+          monitor-on-build: true
+      - run:
+          name: Push Docker Image
           command: |
             docker build -t $DOCKERHUB_USERNAME/app:latest .
             echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USERNAME --password-stdin
