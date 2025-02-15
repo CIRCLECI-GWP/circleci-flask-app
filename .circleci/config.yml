@@ -8,7 +8,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Fixed Dependencies
+          name: Install Fixed Dependencies.
           command: pip install --no-cache-dir -r requirements.txt
       - snyk/scan
       - run:
